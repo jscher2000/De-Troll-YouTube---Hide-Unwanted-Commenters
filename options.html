@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Options for De-Troll YouTube</title>
+<style>
+body {font-size: 16px;}
+table {border: 1px solid #888; border-collapse: collapse;}
+th, td {border: 1px solid #888; padding: 2px 6px;}
+tr[axn="remove"] {background-color: #9fc;}
+td > span:nth-of-type(2) {font-size:0.75em;}
+</style>
+</head>
+<body>
+<form>
+<p>Manage your troll list: click to mark those who should be granted clemency and remember to use the Save Changes button.<br>
+<button id="btnsave" type="button" disabled>Save Changes</button> <button id="notifytabs" type="button" disabled>Notify Open YT Tabs (future)</button><p>
+<table id="trolls">
+	<thead><th>Name/Channel</th><th>Added</th><th>Status</th></thead>
+	<tbody></tbody>
+</table>
+<p id="oops"></p>
+</form>
+<script src="options.js"></script>
+<template id="newTR"><tr><td><span></span><br><span></span></td><td></td><td>Keep Blocking</td></tr></template>
+</body>
+</html>
