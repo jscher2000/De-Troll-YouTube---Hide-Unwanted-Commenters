@@ -1,3 +1,8 @@
 [hidetroll="true"] {
 	display: none !important;
 }
+[detrollbutton="true"]{
+	border: none !important;
+	background: transparent !important;
+	padding: 0 4px !important;
+}

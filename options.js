@@ -1,6 +1,16 @@
+/* 
+  Copyright 2021. Jefferson "jscher2000" Scher. License: MPL-2.0.
+  version 0.5 - initial concept
+  version 0.6 - add buttons for each author
+*/
+
 /*** Initialize Page ***/
 
 var arrTrolls = []; // array of Troll objects
+// Default preferences
+var oPrefs = {
+	buttons: true	// add buttons next to names
+};
 
 // Update arrTrolls from storage
 function refreshTrolls(){
@@ -36,6 +46,22 @@ function refreshTrolls(){
 	});
 }
 refreshTrolls();
+
+// Update oPrefs from storage
+browser.storage.local.get("prefs").then((results) => {
+	if (results.prefs != undefined){
+		if (JSON.stringify(results.prefs) != '{}'){
+			var arrSavedPrefs = Object.keys(results.prefs)
+			for (var j=0; j<arrSavedPrefs.length; j++){
+				oPrefs[arrSavedPrefs[j]] = results.prefs[arrSavedPrefs[j]];
+			}
+		}
+	}
+	// Update form state
+	document.getElementById('chktrashcan').checked = oPrefs.buttons;
+}).catch((err) => {
+	document.getElementById('oops').textContent = 'Error retrieving "prefs" from storage: ' + err.message;
+});
 
 /*** Handle User Actions ***/
 
@@ -78,3 +104,11 @@ function updateTrolls(evt){
 // Attach event handlers 
 document.querySelector('#trolls tbody').addEventListener('click', markRow, false);
 document.getElementById('btnsave').addEventListener('click', updateTrolls, false);
+document.getElementById('chktrashcan').addEventListener('click', function(){
+	oPrefs.buttons = document.getElementById('chktrashcan').checked;
+	browser.storage.local.set(
+		{prefs: oPrefs}
+	).catch((err) => {
+		document.getElementById('oops').textContent = 'Error on browser.storage.local.set(): ' + err.message;
+	});
+}, false);
