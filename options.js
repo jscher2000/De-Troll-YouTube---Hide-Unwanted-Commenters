@@ -2,6 +2,7 @@
   Copyright 2021. Jefferson "jscher2000" Scher. License: MPL-2.0.
   version 0.5 - initial concept
   version 0.6 - add buttons for each author
+  version 0.6.1 - bug fixes, Refresh List button on Options page
 */
 
 /*** Initialize Page ***/
@@ -84,6 +85,7 @@ function markRow(evt){
 
 // Update storage
 function updateTrolls(evt){
+	evt.target.blur();
 	// Update and save arrTrolls
 	var changed = document.querySelectorAll('#trolls tr[axn="remove"]');
 	for (i=0; i<changed.length; i++){
@@ -103,6 +105,7 @@ function updateTrolls(evt){
 
 // Attach event handlers 
 document.querySelector('#trolls tbody').addEventListener('click', markRow, false);
+document.getElementById('btnrefresh').addEventListener('click', refreshTrolls, false);
 document.getElementById('btnsave').addEventListener('click', updateTrolls, false);
 document.getElementById('chktrashcan').addEventListener('click', function(){
 	oPrefs.buttons = document.getElementById('chktrashcan').checked;

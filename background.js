@@ -2,6 +2,7 @@
   Copyright 2021. Jefferson "jscher2000" Scher. License: MPL-2.0.
   version 0.5 - initial concept
   version 0.6 - add buttons for each author
+  version 0.6.1 - bug fixes, Refresh List button on Options page
 */
 
 /**** Create and populate data structure ****/

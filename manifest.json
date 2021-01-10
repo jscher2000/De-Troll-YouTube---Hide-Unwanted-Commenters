@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "De-Troll YouTube - Hide Unwanted Commenters",
 	"description": "Right-click a comment (or reply) to hide the commenter using their channel ID. Not an official YouTube extension.",
-	"version": "0.6",
+	"version": "0.6.1",
 	"applications":{
 		"gecko": {
 			"id": "de-troll-youtube@jeffersonscher.com",

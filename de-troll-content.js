@@ -2,6 +2,7 @@
   Copyright 2021. Jefferson "jscher2000" Scher. License: MPL-2.0.
   version 0.5 - initial concept
   version 0.6 - add buttons for each author
+  version 0.6.1 - bug fixes, Refresh List button on Options page
 */
 
 /*** Main Hiding Routine (may need fixed as Google changes things) ***/
@@ -103,6 +104,10 @@ var oPrefs = {
 	buttons: true	// add buttons next to names
 };
 var btnTrash = document.createElement('button');
+btnTrash.type = 'button';
+btnTrash.setAttribute('detrollbutton', 'true');
+btnTrash.setAttribute('title', 'Hide this commenter');
+btnTrash.appendChild(document.createTextNode('🗑️'));
 
 // Update arrTrolls from storage
 var step = 'retrieving "trolls" from storage';
@@ -131,10 +136,6 @@ browser.storage.local.get("trolls").then((results) => {
 		}
 		if (oPrefs.buttons){
 			document.querySelector('ytd-comments#comments').addEventListener('click', doDTbutton, false);
-			btnTrash.type = 'button';
-			btnTrash.setAttribute('detrollbutton', 'true');
-			btnTrash.setAttribute('title', 'Hide this commenter');
-			btnTrash.appendChild(document.createTextNode('🗑️'));
 		}
 	});
 }).then(() => {
@@ -144,6 +145,9 @@ browser.storage.local.get("trolls").then((results) => {
 	// set up mutation observer for future loaded comments
 	step = 'creating Mutation Observer';
 	var chgMon = new MutationObserver((mutationSet, observer) => {
+		if (oPrefs.buttons){ // no worries about duplicating
+			document.querySelector('ytd-comments#comments').addEventListener('click', doDTbutton, false);
+		}
 		mutationSet.forEach((mutation) => {
 			if (mutation.type == "childList" && (mutation.target.nodeName == 'YTD-COMMENT-RENDERER' || 
 				mutation.target.id == replyId || mutation.target.classList.contains(replyClass))){
