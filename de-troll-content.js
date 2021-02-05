@@ -3,6 +3,7 @@
   version 0.5 - initial concept
   version 0.6 - add buttons for each author
   version 0.6.1 - bug fixes, Refresh List button on Options page
+  version 0.7 - re-base event handler for post (Community) pages
 */
 
 /*** Main Hiding Routine (may need fixed as Google changes things) ***/
@@ -16,7 +17,7 @@ const replyId = 'loaded-replies';
 const replyClass = 'ytd-comment-replies-renderer';
 
 function flagTrolls(elStart){
-	var threads, replies, i, author, chan;
+	var threads, replies, i, author, chan, verif;
 	// Check threads (top level comments)
 	if (elStart){ // bump up to thread instead of entire doc
 		threads = [elStart.closest(threadselector)];
@@ -30,10 +31,21 @@ function flagTrolls(elStart){
 			if (arrChans.includes(chan)){
 				threads[i].setAttribute('hidetroll', 'true');
 			} else if(oPrefs.buttons) {  // insert button if we don't already have one on this comment
-				if (!author.nextElementSibling){
-					author.parentNode.appendChild(btnTrash.cloneNode(true));
-				} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
-					author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
+				if (!author.hasAttribute('hidden')){  // position next to authorsel
+					if (!author.nextElementSibling){
+						author.parentNode.appendChild(btnTrash.cloneNode(true));
+					} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
+						author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
+					}
+				} else {  // check for verified author tag
+					verif = author.nextElementSibling;
+					if (verif && !verif.hasAttribute('hidden')){
+						if (verif && !verif.nextElementSibling){
+							verif.parentNode.appendChild(btnTrash.cloneNode(true));
+						} else if (verif && !verif.nextElementSibling.hasAttribute('detrollbutton')){
+							verif.parentNode.insertBefore(btnTrash.cloneNode(true), verif.nextElementSibling);
+						}
+					}
 				}
 			}
 		}
@@ -51,10 +63,21 @@ function flagTrolls(elStart){
 			if (arrChans.includes(chan)){
 				replies[i].setAttribute('hidetroll', 'true');
 			} else if(oPrefs.buttons) {  // insert button if we don't already have one on this comment
-				if (!author.nextElementSibling){
-					author.parentNode.appendChild(btnTrash.cloneNode(true));
-				} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
-					author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
+				if (!author.hasAttribute('hidden')){  // position next to authorsel
+					if (!author.nextElementSibling){
+						author.parentNode.appendChild(btnTrash.cloneNode(true));
+					} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
+						author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
+					}
+				} else {  // check for verified author tag
+					verif = author.nextElementSibling;
+					if (verif && !verif.hasAttribute('hidden')){
+						if (verif && !verif.nextElementSibling){
+							verif.parentNode.appendChild(btnTrash.cloneNode(true));
+						} else if (verif && !verif.nextElementSibling.hasAttribute('detrollbutton')){
+							verif.parentNode.insertBefore(btnTrash.cloneNode(true), verif.nextElementSibling);
+						}
+					}
 				}
 			}
 		}
@@ -146,7 +169,7 @@ browser.storage.local.get("trolls").then((results) => {
 	step = 'creating Mutation Observer';
 	var chgMon = new MutationObserver((mutationSet, observer) => {
 		if (oPrefs.buttons){ // no worries about duplicating
-			document.querySelector('ytd-comments#comments').addEventListener('click', doDTbutton, false);
+			document.body.addEventListener('click', doDTbutton, false);
 		}
 		mutationSet.forEach((mutation) => {
 			if (mutation.type == "childList" && (mutation.target.nodeName == 'YTD-COMMENT-RENDERER' || 
