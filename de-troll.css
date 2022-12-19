@@ -6,3 +6,7 @@
 	background: transparent !important;
 	padding: 0 4px !important;
 }
+/* Reduce trash can button wrapping - v0.8 */
+h3.ytd-comment-renderer > a#author-text.yt-simple-endpoint.ytd-comment-renderer {
+	display: inline !important; /* override display:block */
+}

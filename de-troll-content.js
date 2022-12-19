@@ -1,9 +1,11 @@
 /* 
-  Copyright 2021. Jefferson "jscher2000" Scher. License: MPL-2.0.
+  Copyright 2022. Jefferson "jscher2000" Scher. License: MPL-2.0.
   version 0.5 - initial concept
   version 0.6 - add buttons for each author
   version 0.6.1 - bug fixes, Refresh List button on Options page
   version 0.7 - re-base event handler for post (Community) pages
+  version 0.8 - fix various broken things
+  TODO: hidden comment count, options button
 */
 
 /*** Main Hiding Routine (may need fixed as Google changes things) ***/
@@ -28,22 +30,25 @@ function flagTrolls(elStart){
 		author = threads[i].querySelector(threadauthorsel);
 		if (author && author.href){
 			chan = author.href.slice(author.href.lastIndexOf('/') + 1);
-			if (arrChans.includes(chan)){
+			if (arrChans.includes(chan)){  // hide comment
 				threads[i].setAttribute('hidetroll', 'true');
-			} else if(oPrefs.buttons) {  // insert button if we don't already have one on this comment
-				if (!author.hasAttribute('hidden')){  // position next to authorsel
-					if (!author.nextElementSibling){
-						author.parentNode.appendChild(btnTrash.cloneNode(true));
-					} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
-						author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
-					}
-				} else {  // check for verified author tag
-					verif = author.nextElementSibling;
-					if (verif && !verif.hasAttribute('hidden')){
-						if (verif && !verif.nextElementSibling){
-							verif.parentNode.appendChild(btnTrash.cloneNode(true));
-						} else if (verif && !verif.nextElementSibling.hasAttribute('detrollbutton')){
-							verif.parentNode.insertBefore(btnTrash.cloneNode(true), verif.nextElementSibling);
+			} else {  // un-hide comment
+				threads[i].removeAttribute('hidetroll');
+				if (oPrefs.buttons) {  // insert button if we don't already have one on this comment
+					if (!author.hasAttribute('hidden')){  // position next to authorsel
+						if (!author.nextElementSibling){
+							author.parentNode.appendChild(btnTrash.cloneNode(true));
+						} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
+							author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
+						}
+					} else {  // check for verified author tag
+						verif = author.nextElementSibling;
+						if (verif && !verif.hasAttribute('hidden')){
+							if (verif && !verif.nextElementSibling){
+								verif.parentNode.appendChild(btnTrash.cloneNode(true));
+							} else if (verif && !verif.nextElementSibling.hasAttribute('detrollbutton')){
+								verif.parentNode.insertBefore(btnTrash.cloneNode(true), verif.nextElementSibling);
+							}
 						}
 					}
 				}
@@ -60,26 +65,29 @@ function flagTrolls(elStart){
 		author = replies[i].querySelector(authorsel);
 		if (author && author.href){
 			chan = author.href.slice(author.href.lastIndexOf('/') + 1);
-			if (arrChans.includes(chan)){
+			if (arrChans.includes(chan)){  // hide comment
 				replies[i].setAttribute('hidetroll', 'true');
-			} else if(oPrefs.buttons) {  // insert button if we don't already have one on this comment
-				if (!author.hasAttribute('hidden')){  // position next to authorsel
-					if (!author.nextElementSibling){
-						author.parentNode.appendChild(btnTrash.cloneNode(true));
-					} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
-						author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
-					}
-				} else {  // check for verified author tag
-					verif = author.nextElementSibling;
-					if (verif && !verif.hasAttribute('hidden')){
-						if (verif && !verif.nextElementSibling){
-							verif.parentNode.appendChild(btnTrash.cloneNode(true));
-						} else if (verif && !verif.nextElementSibling.hasAttribute('detrollbutton')){
-							verif.parentNode.insertBefore(btnTrash.cloneNode(true), verif.nextElementSibling);
+			} else {  // un-hide comment
+				replies[i].removeAttribute('hidetroll');
+				if (oPrefs.buttons) {  // insert button if we don't already have one on this comment
+					if (!author.hasAttribute('hidden')){  // position next to authorsel
+						if (!author.nextElementSibling){
+							author.parentNode.appendChild(btnTrash.cloneNode(true));
+						} else if (!author.nextElementSibling.hasAttribute('detrollbutton')){
+							author.parentNode.insertBefore(btnTrash.cloneNode(true), author.nextElementSibling);
+						}
+					} else {  // check for verified author tag
+						verif = author.nextElementSibling;
+						if (verif && !verif.hasAttribute('hidden')){
+							if (verif && !verif.nextElementSibling){
+								verif.parentNode.appendChild(btnTrash.cloneNode(true));
+							} else if (verif && !verif.nextElementSibling.hasAttribute('detrollbutton')){
+								verif.parentNode.insertBefore(btnTrash.cloneNode(true), verif.nextElementSibling);
+							}
 						}
 					}
 				}
-			}
+			} 
 		}
 	}
 }
@@ -99,20 +107,22 @@ function doDTbutton(evt){
 			}
 			// Update array
 			chan = author.href.slice(author.href.lastIndexOf('/') + 1);
-			arrChans.push(chan);
-			// Re-run the hider function
-			flagTrolls(null);
-			// Construct troll record
-			var troll = {
-				"name": author.textContent.trim(),
-				"time": Date.now(),
-				"channel": chan
+			if (!arrChans.includes(chan)){ // it's a new one!
+				arrChans.push(chan);
+				// Re-run the hider function
+				flagTrolls(null);
+				// Construct troll record
+				var troll = {
+					"name": author.textContent.trim(),
+					"time": Date.now(),
+					"channel": chan
+				}
+				// Update storage
+				arrTrolls.push(troll);
+				browser.storage.local.set(
+					{trolls: arrTrolls}
+				).catch((err) => {console.log('Error on browser.storage.local.set(): ' + err.message);});
 			}
-			// Update storage
-			arrTrolls.push(troll);
-			browser.storage.local.set(
-				{trolls: arrTrolls}
-			).catch((err) => {console.log('Error on browser.storage.local.set(): ' + err.message);});
 		}
 	}
 }
@@ -173,6 +183,7 @@ browser.storage.local.get("trolls").then((results) => {
 		}
 		mutationSet.forEach((mutation) => {
 			if (mutation.type == "childList" && (mutation.target.nodeName == 'YTD-COMMENT-RENDERER' || 
+				mutation.target.nodeName == 'YTD-COMMENT-THREAD-RENDERER' || mutation.target.nodeName == 'YTD-COMMENT-REPLIES-RENDERER' || 
 				mutation.target.id == replyId || mutation.target.classList.contains(replyClass))){
 				flagTrolls(mutation.target);
 			}
@@ -200,20 +211,22 @@ function handleMessage(request, sender, sendResponse){
 				if (author && author.href){
 					// Update the blocked channels
 					var chan = author.href.slice(author.href.lastIndexOf('/') + 1);
-					arrChans.push(chan);
-					// Re-run the hider function
-					flagTrolls(null);
-					// Construct troll record
-					var troll = {
-						"name": author.textContent.trim(),
-						"time": Date.now(),
-						"channel": chan
+					if (!arrChans.includes(chan)){ // it's a new one!
+						arrChans.push(chan);
+						// Re-run the hider function
+						flagTrolls(null);
+						// Construct troll record
+						var troll = {
+							"name": author.textContent.trim(),
+							"time": Date.now(),
+							"channel": chan
+						}
+						// Update storage
+						arrTrolls.push(troll);
+						browser.storage.local.set(
+							{trolls: arrTrolls}
+						).catch((err) => {console.log('Error on browser.storage.local.set(): ' + err.message);});
 					}
-					// Update storage
-					arrTrolls.push(troll);
-					browser.storage.local.set(
-						{trolls: arrTrolls}
-					).catch((err) => {console.log('Error on browser.storage.local.set(): ' + err.message);});
 				} else {
 					window.alert('Had a problem identifying the comment author.');
 				}
@@ -227,3 +240,28 @@ function handleMessage(request, sender, sendResponse){
 	}
 }
 browser.runtime.onMessage.addListener(handleMessage);
+
+/* Monitor for external storage changes - v0.8 */
+
+function fixHiding(changes, area) {
+	if ('trolls' in changes){
+		if (JSON.stringify(arrTrolls) != JSON.stringify(changes.trolls.newValue)){
+			// Update our arrays
+			arrTrolls = changes.trolls.newValue;
+			// Freshen the channel array
+			arrChans = [];
+			for (var i=0; i<arrTrolls.length; i++){
+				if (arrTrolls[i].hasOwnProperty('channel')) arrChans.push(arrTrolls[i].channel);
+			}
+			// Run through and update the hiding
+			flagTrolls(null);
+		} else {
+			// Updated trolls already accounted for. No action needed.
+		}
+	}
+	if ('prefs' in changes){
+		// TODO: update oPrefs
+	}
+}
+  
+browser.storage.onChanged.addListener(fixHiding);
