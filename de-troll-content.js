@@ -1,19 +1,20 @@
 /* 
-  Copyright 2022. Jefferson "jscher2000" Scher. License: MPL-2.0.
+  Copyright 2024. Jefferson "jscher2000" Scher. License: MPL-2.0.
   version 0.5 - initial concept
   version 0.6 - add buttons for each author
   version 0.6.1 - bug fixes, Refresh List button on Options page
   version 0.7 - re-base event handler for post (Community) pages
   version 0.8 - fix various broken things
+  version 0.8.1 - update CSS selectors, accommodate delayed comment rendering (3/30/2024)
   TODO: hidden comment count, options button
 */
 
 /*** Main Hiding Routine (may need fixed as Google changes things) ***/
 
-const commentsel = 'ytd-comment-renderer';
+const commentsel = 'ytd-comment-view-model, ytd-comment-renderer';
 const authorsel = '#author-text';
 const threadselector = 'ytd-comment-thread-renderer';
-const threadauthorsel = 'ytd-comment-renderer:not([is-reply]) ' + authorsel;
+const threadauthorsel = 'ytd-comment-view-model:not([is-reply]) ' + authorsel + ', ytd-comment-renderer:not([is-reply]) ' + authorsel;
 const replyselector = 'ytd-comment-thread-renderer:not([hidetroll="true"]) ytd-comment-renderer[is-reply]';
 const replyId = 'loaded-replies';
 const replyClass = 'ytd-comment-replies-renderer';
@@ -168,7 +169,7 @@ browser.storage.local.get("trolls").then((results) => {
 			}
 		}
 		if (oPrefs.buttons){
-			document.querySelector('ytd-comments#comments').addEventListener('click', doDTbutton, false);
+			setupClickEvent();
 		}
 	});
 }).then(() => {
@@ -196,6 +197,15 @@ browser.storage.local.get("trolls").then((results) => {
 		attributes: false, characterData: false
 	});
 }).catch((err) => {console.log('Error ' + step + ': '+err.message);});
+
+function setupClickEvent(){
+	var comments = document.querySelector('ytd-comments#comments');
+	if (comments){
+		comments.addEventListener('click', doDTbutton, false);
+	} else {
+		window.setTimeout(setupClickEvent, 500);
+	}
+}
 
 /*** Messaging Functions ***/
 

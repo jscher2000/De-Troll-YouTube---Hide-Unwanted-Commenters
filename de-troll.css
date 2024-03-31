@@ -6,7 +6,8 @@
 	background: transparent !important;
 	padding: 0 4px !important;
 }
-/* Reduce trash can button wrapping - v0.8 */
-h3.ytd-comment-renderer > a#author-text.yt-simple-endpoint.ytd-comment-renderer {
+/* Reduce trash can button wrapping - v0.8, v0.8.1 */
+h3.ytd-comment-renderer > a#author-text.yt-simple-endpoint.ytd-comment-renderer, 
+h3.ytd-comment-view-model > a#author-text.yt-simple-endpoint.ytd-comment-view-model {
 	display: inline !important; /* override display:block */
 }
