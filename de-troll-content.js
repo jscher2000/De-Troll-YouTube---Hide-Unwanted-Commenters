@@ -6,6 +6,7 @@
   version 0.7 - re-base event handler for post (Community) pages
   version 0.8 - fix various broken things
   version 0.8.1 - update CSS selectors, accommodate delayed comment rendering (3/30/2024)
+  version 0.8.2 - update CSS selectors for comment replies (3/31/2024)
   TODO: hidden comment count, options button
 */
 
@@ -15,7 +16,7 @@ const commentsel = 'ytd-comment-view-model, ytd-comment-renderer';
 const authorsel = '#author-text';
 const threadselector = 'ytd-comment-thread-renderer';
 const threadauthorsel = 'ytd-comment-view-model:not([is-reply]) ' + authorsel + ', ytd-comment-renderer:not([is-reply]) ' + authorsel;
-const replyselector = 'ytd-comment-thread-renderer:not([hidetroll="true"]) ytd-comment-renderer[is-reply]';
+const replyselector = 'ytd-comment-thread-renderer:not([hidetroll="true"]) ytd-comment-view-model[is-reply], ytd-comment-thread-renderer:not([hidetroll="true"]) ytd-comment-renderer[is-reply]';
 const replyId = 'loaded-replies';
 const replyClass = 'ytd-comment-replies-renderer';
 
